@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>商品總覽 - LIFF 測試版</title>
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    .product { border-bottom: 1px solid #ddd; padding: 10px 0; }
+    .actions { margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <h2>商品總覽（測試）</h2>
+  <div id="product-list"></div>
+  <div class="actions">
+    <button onclick="handleInquiry()">🔍 詢價</button>
+    <button onclick="handleAddToFavorites()">➕ 加入常用清單</button>
+  </div>
+
+  <script src="products.js"></script>
+  <script>
+    const selectedProducts = {};
+
+    function renderProducts() {
+      const container = document.getElementById("product-list");
+      products.forEach((product, index) => {
+        const html = `
+          <div class="product">
+            <label>
+              <input type="checkbox" onchange="toggleProduct('${product.id}', this.checked)">
+              ${product.name}
+            </label>
+            <select id="select-${product.id}">
+              ${product.packages.map(p => `<option value="${p.unit}">${p.unit}</option>`).join('')}
+            </select>
+          </div>
+        `;
+        container.insertAdjacentHTML("beforeend", html);
+      });
+    }
+
+    function toggleProduct(id, checked) {
+      if (checked) {
+        const unit = document.getElementById("select-" + id).value;
+        selectedProducts[id] = unit;
+      } else {
+        delete selectedProducts[id];
+      }
+    }
+
+    function handleInquiry() {
+      const msg = Object.entries(selectedProducts).map(([id, unit]) => `- ${id}（${unit}）`).join("\n");
+      alert("以下是詢價商品：\n" + msg);
+    }
+
+    function handleAddToFavorites() {
+      const msg = Object.entries(selectedProducts).map(([id, unit]) => `- ${id}（${unit}）`).join("\n");
+      alert("以下將加入常用清單：\n" + msg);
+    }
+
+    renderProducts();
+  </script>
+</body>
+</html>
