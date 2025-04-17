@@ -2,7 +2,7 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8">
-  <title>商品總覽 - LIFF 測試版</title>
+  <title>商品總覽（詢價）</title>
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <style>
     body { font-family: sans-serif; padding: 20px; }
@@ -11,20 +11,25 @@
   </style>
 </head>
 <body>
-  <h2>商品總覽（測試）</h2>
+  <h2>商品總覽（詢價測試版）</h2>
   <div id="product-list"></div>
   <div class="actions">
     <button onclick="handleInquiry()">🔍 詢價</button>
-    <button onclick="handleAddToFavorites()">➕ 加入常用清單</button>
   </div>
 
-  <script src="products.js"></script>
   <script>
+    const products = [
+      { id: "11111002-20", name: "醬油碟-KY114大(坤*PS)160入*30包", packages: [{ unit: "包" }] },
+      { id: "88110000-A021", name: "圓夢洗手乳*1GL*佛手柑橘香*A", packages: [{ unit: "桶" }] },
+      { id: "29020001-30", name: "保溫茶桶-鎰滿茶桶15L-9905", packages: [{ unit: "個" }] },
+      { id: "34070004-0167", name: "口罩-KF94台立體4層醫療*10入*白色", packages: [{ unit: "盒" }] }
+    ];
+
     const selectedProducts = {};
 
     function renderProducts() {
       const container = document.getElementById("product-list");
-      products.forEach((product, index) => {
+      products.forEach((product) => {
         const html = `
           <div class="product">
             <label>
@@ -41,25 +46,46 @@
     }
 
     function toggleProduct(id, checked) {
+      const unit = document.getElementById("select-" + id).value;
       if (checked) {
-        const unit = document.getElementById("select-" + id).value;
         selectedProducts[id] = unit;
       } else {
         delete selectedProducts[id];
       }
     }
 
-    function handleInquiry() {
-      const msg = Object.entries(selectedProducts).map(([id, unit]) => `- ${id}（${unit}）`).join("\n");
-      alert("以下是詢價商品：\n" + msg);
+    async function handleInquiry() {
+      const selectedItems = Object.entries(selectedProducts)
+        .map(([id, unit]) => `- ${id}（${unit}）`)
+        .join("\n");
+
+      const message = `您好，我想詢問以下商品的價格：\n${selectedItems}`;
+
+      if (!liff.isInClient()) {
+        alert("請在 LINE 中開啟此頁面才能送出訊息。");
+        return;
+      }
+
+      try {
+        await liff.sendMessages([
+          { type: "text", text: message }
+        ]);
+        alert("詢價訊息已發送！");
+      } catch (err) {
+        alert("發送失敗：" + err);
+      }
     }
 
-    function handleAddToFavorites() {
-      const msg = Object.entries(selectedProducts).map(([id, unit]) => `- ${id}（${unit}）`).join("\n");
-      alert("以下將加入常用清單：\n" + msg);
+    async function initLiff() {
+      try {
+        await liff.init({}); // 不指定 liffId，使用 LIFF URL 模式
+        renderProducts();
+      } catch (error) {
+        alert("LIFF 初始化失敗：" + error);
+      }
     }
 
-    renderProducts();
+    initLiff();
   </script>
 </body>
 </html>
