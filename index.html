@@ -78,7 +78,7 @@
 
     async function initLiff() {
       try {
-        await liff.init({}); // 不指定 liffId，使用 LIFF URL 模式
+        await liff.init({ liffId: "1657969057-v3Y9bp9A" });
         renderProducts();
       } catch (error) {
         alert("LIFF 初始化失敗：" + error);
