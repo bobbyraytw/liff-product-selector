@@ -1,46 +1,50 @@
 export default function ProductSelectorDemo() {
+  const products = [
+    { name: "私版印刷圖稿確認(2張)", unit: "式" },
+    { name: "產品瑕疵扣款", unit: "入" },
+    { name: "產品瑕疵加倍退款", unit: "入" },
+    { name: "發車備忘", unit: "套" },
+    { name: "棉繩", unit: "尺" },
+    { name: "遮光網 8尺*10尺", unit: "套" },
+    { name: "銘謝惠顧", unit: "個" }
+  ];
+
   return (
-    <div className="min-h-screen bg-white text-gray-900 p-6">
-      <h1 className="text-2xl font-bold mb-4">商品詢價模擬畫面</h1>
+    <div className="min-h-screen bg-gray-50 text-gray-900 p-6">
+      <h1 className="text-2xl font-bold mb-6">商品詢價模擬畫面</h1>
 
-      {/* 商品分類選單 */}
-      <div className="mb-4">
-        <span className="font-semibold mr-2">分類：</span>
-        <button className="px-3 py-1 border rounded mr-2">全部</button>
-        <button className="px-3 py-1 border rounded mr-2">免洗餐具</button>
-        <button className="px-3 py-1 border rounded">清潔劑</button>
-      </div>
-
-      {/* 商品清單（每頁 20 項為例） */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {[...Array(8)].map((_, i) => (
+      {/* 商品清單展示 */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {products.map((product, index) => (
           <div
-            key={i}
-            className="border rounded-lg p-3 shadow hover:shadow-md"
+            key={index}
+            className="border rounded-lg p-4 bg-white shadow hover:shadow-md"
           >
-            <h2 className="text-lg font-semibold">商品名稱 {i + 1}</h2>
-            <select className="border mt-2 w-full p-1">
+            <h2 className="text-lg font-semibold mb-2">{product.name}</h2>
+            <p className="text-sm text-gray-600 mb-2">單位：{product.unit}</p>
+            <select className="border w-full p-2 text-sm mb-3">
               <option>請選擇包裝</option>
               <option>小包裝</option>
               <option>大包裝</option>
             </select>
-            <div className="mt-2">
-              <label className="inline-flex items-center">
-                <input type="checkbox" className="form-checkbox" />
-                <span className="ml-2">加入詢價</span>
-              </label>
-            </div>
+            <label className="inline-flex items-center">
+              <input type="checkbox" className="form-checkbox" />
+              <span className="ml-2">加入詢價</span>
+            </label>
           </div>
         ))}
       </div>
 
-      {/* 底部操作欄 */}
-      <div className="mt-6 flex justify-end space-x-4">
-        <button className="bg-gray-200 px-4 py-2 rounded">加入常用清單</button>
-        <button className="bg-green-500 text-white px-4 py-2 rounded">
+      {/* 操作按鈕區域 */}
+      <div className="mt-8 flex justify-end space-x-4">
+        <button className="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400">
+          加入常用清單
+        </button>
+        <button className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
           送出詢價
         </button>
       </div>
     </div>
   );
 }
+
