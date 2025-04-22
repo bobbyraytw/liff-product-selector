@@ -1,56 +1,46 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8" />
-  <title>LIFF userId Demo</title>
+export default function ProductSelectorDemo() {
+  return (
+    <div className="min-h-screen bg-white text-gray-900 p-6">
+      <h1 className="text-2xl font-bold mb-4">商品詢價模擬畫面</h1>
 
-  <!-- ①  載入 LIFF SDK -->
-  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+      {/* 商品分類選單 */}
+      <div className="mb-4">
+        <span className="font-semibold mr-2">分類：</span>
+        <button className="px-3 py-1 border rounded mr-2">全部</button>
+        <button className="px-3 py-1 border rounded mr-2">免洗餐具</button>
+        <button className="px-3 py-1 border rounded">清潔劑</button>
+      </div>
 
-  <style>
-    body{font-family:sans-serif;text-align:center;padding:2rem;}
-    button{padding:.6rem 1.4rem;font-size:1rem;border:none;border-radius:8px;
-      background:#06c755;color:#fff;}
-  </style>
-</head>
-<body>
-  <h1>LIFF userId Demo</h1>
-  <p id="uid">initialising…</p>
-  <button id="sendBtn" style="display:none;">一鍵詢價</button>
+      {/* 商品清單（每頁 20 項為例） */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {[...Array(8)].map((_, i) => (
+          <div
+            key={i}
+            className="border rounded-lg p-3 shadow hover:shadow-md"
+          >
+            <h2 className="text-lg font-semibold">商品名稱 {i + 1}</h2>
+            <select className="border mt-2 w-full p-1">
+              <option>請選擇包裝</option>
+              <option>小包裝</option>
+              <option>大包裝</option>
+            </select>
+            <div className="mt-2">
+              <label className="inline-flex items-center">
+                <input type="checkbox" className="form-checkbox" />
+                <span className="ml-2">加入詢價</span>
+              </label>
+            </div>
+          </div>
+        ))}
+      </div>
 
-  <script>
-    // ②  把下行改成你在 LINE Console 產生的 liffId（數字字串）
-    const liffId = 'LIFF_ID_HERE';
-
-    async function init() {
-      /* ③ 初始化 */
-      await liff.init({ liffId });
-
-      /* ④ 未登入就導向登入 */
-      if (!liff.isLoggedIn()) {
-        return liff.login({ redirectUri: location.href });
-      }
-
-      /* ⑤ 取得個人資料 → userId */
-      const profile = await liff.getProfile();
-      const uid = profile.userId;
-      document.getElementById('uid').textContent = '你的 userId：' + uid;
-
-      /* ⑥ 顯示「一鍵詢價」示範按鈕 */
-      const btn = document.getElementById('sendBtn');
-      btn.style.display = 'inline-block';
-      btn.onclick = async () => {
-        await liff.sendMessages([
-          { type:'text', text:`我要詢價 (uid=${uid})` }
-        ]);
-        alert('訊息已送出！');
-        liff.closeWindow();
-      };
-    }
-    init().catch(err => {
-      document.getElementById('uid').textContent = '初始化失敗：' + err;
-      console.error(err);
-    });
-  </script>
-</body>
-</html>
+      {/* 底部操作欄 */}
+      <div className="mt-6 flex justify-end space-x-4">
+        <button className="bg-gray-200 px-4 py-2 rounded">加入常用清單</button>
+        <button className="bg-green-500 text-white px-4 py-2 rounded">
+          送出詢價
+        </button>
+      </div>
+    </div>
+  );
+}
