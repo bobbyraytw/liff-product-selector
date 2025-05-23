@@ -1,62 +1,84 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>商品詢價模擬畫面</title>
-  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-  <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LIFF 詢價 Demo</title>
+
+  <!-- LIFF SDK (login channel 專用) -->
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+
   <style>
-    body { font-family: sans-serif; background: #f9fafb; padding: 2rem; color: #1f2937; }
-    .product { border: 1px solid #ddd; border-radius: 8px; padding: 1rem; background: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 1rem; }
-    .btn { padding: 0.5rem 1rem; margin-left: 0.5rem; border-radius: 4px; border: none; }
-    .btn-send { background: #22c55e; color: white; }
-    .btn-save { background: #e5e7eb; }
+    body{font-family:sans-serif;background:#f9fafb;color:#111;padding:2rem;}
+    .product{background:#fff;border:1px solid #ddd;padding:1rem;border-radius:8px;margin-bottom:1rem;box-shadow:0 2px 5px rgba(0,0,0,0.05)}
+    .btn{padding:.5rem 1rem;border:none;border-radius:4px;margin-left:.5rem}
+    .btn-primary{background:#22c55e;color:#fff}
+    .btn-secondary{background:#e5e7eb}
   </style>
 </head>
 <body>
-  <h1>商品詢價模擬畫面</h1>
-  <div id="root"></div>
+  <h1>商品詢價模擬頁面</h1>
 
-  <script type="text/babel">
-    function App() {
-      const [products, setProducts] = React.useState([]);
+  <div id="product-list"></div>
 
-      React.useEffect(() => {
-        fetch("products.json")
-          .then(res => res.json())
-          .then(data => setProducts(data));
-      }, []);
+  <div style="text-align:right;margin-top:2rem;">
+    <button class="btn btn-secondary" onclick="saveFav()">加入常用清單</button>
+    <button class="btn btn-primary"   onclick="sendData()">送出詢價</button>
+  </div>
 
-      return (
-        <div>
-          {products.map((p, i) => (
-            <div key={i} className="product">
-              <h2>{p.name}</h2>
-              <p>單位：{p.unit}</p>
-              <select>
-                <option>請選擇包裝</option>
-                <option>小包裝</option>
-                <option>大包裝</option>
-              </select>
-              <div>
-                <label>
-                  <input type="checkbox" /> 加入詢價
-                </label>
-              </div>
-            </div>
-          ))}
-          <div style={{ textAlign: "right", marginTop: "1.5rem" }}>
-            <button className="btn btn-save">加入常用清單</button>
-            <button className="btn btn-send">送出詢價</button>
+  <script>
+    /* ①  將下面 liffId 換成你在 LINE Login channel 新增 LIFF App 後拿到的那串 ID */
+    const liffId = 'YOUR_LOGIN_LIFF_ID_HERE';
+
+    /* ②  商品清單示例，可自行改成 fetch("/products.json") 讀外部檔案 */
+    const products = [
+      { name: '便當紙餐盒 1號', unit: '個' },
+      { name: '擦手紙 V折',     unit: '包' },
+      { name: '強效油污清潔劑',   unit: '瓶' }
+    ];
+
+    /* ---------- 畫面渲染 ---------- */
+    function render() {
+      const list = document.getElementById('product-list');
+      list.innerHTML = '';
+      products.forEach(p=>{
+        list.insertAdjacentHTML('beforeend',`
+          <div class="product">
+            <strong>${p.name}</strong>（${p.unit}）<br>
+            <label><input type="checkbox" value="${p.name}"> 加入詢價</label>
           </div>
-        </div>
-      );
+        `)
+      });
     }
 
-    const root = ReactDOM.createRoot(document.getElementById("root"));
-    root.render(<App />);
+    /* ---------- 送出詢價（示範 alert，可改成 fetch 後端 / pushMessage） ---------- */
+    function sendData() {
+      const selected = [...document.querySelectorAll('input[type=checkbox]:checked')]
+        .map(cb=>cb.value);
+      if(!selected.length){
+        alert('請先勾選商品');
+        return;
+      }
+      alert('選擇的商品：\n' + selected.join('\n'));
+      // 這裡可以改成 fetch('/api/order', {method:'POST', body:JSON.stringify({uid,items:selected})})
+    }
+
+    function saveFav(){
+      alert('已將勾選商品存成常用清單（示意）');
+    }
+
+    /* ---------- LIFF 初始化 ---------- */
+    window.onload = () => {
+      liff.init({ liffId })
+        .then(()=>liff.getProfile())
+        .then(profile=>{
+          console.log('使用者 ID', profile.userId);
+          render();
+        })
+        .catch(err=>{
+          alert('LIFF 初始化失敗：'+err);
+        });
+    };
   </script>
 </body>
 </html>
